@@ -27,11 +27,25 @@ class ReferralRepository extends CommonRepository
             $query->where('r.lead_id = '.(int) $leadId);
         }
 
-        try {
-            return $query->execute()->fetchAll()[0];
-        } catch (NoResultException $exception) {
-            return null;
-        }
+        return $query->execute()->fetchAll();
+    }
+
+    /**
+     * Get a lead's referrals.
+     *
+     * @param int $leadId
+     *
+     * @return array
+     */
+    public function getLeadReferrals($leadId)
+    {
+        $query = $this->getEntityManager()->getConnection()->createQueryBuilder();
+
+        $query->select('*')
+            ->from(MAUTIC_TABLE_PREFIX.'referrals', 'r')
+            ->where('r.referrer_id = '.(int) $leadId);
+
+        return $query->execute()->fetchAll();
     }
 
     /**

@@ -4,10 +4,18 @@
 [![Packagist](https://img.shields.io/packagist/l/maatoo/mautic-referrals-bundle.svg)](LICENSE)
 [![mautic](https://img.shields.io/badge/mautic-3-blue.svg)](https://www.mautic.org/mixin/referrals/)
 
-This plugin enables referrals in Mautic 3.x.
+This plugins extends Mautic forms with a 'Referrals' field that enables Mautic to build Referral campaigns. New or existing contacts can invite additional contacts. Invitees are added as contacts to Mautic with a freely selectable tag.
 
+## How it works
+The plugin adds a new form field type ‘Referrals’. This field has a configuration to specify how many text inputs are shown in the form and what tags should be set on referred contacts.
+Once the form is submitted and the email addresses are valid, a new contact is created for each specified email address, or updated if one already exists with the same email address.
+
+The plugins keeps then a reference which contact invited the new contact (Referral). Additionally, you can use {referrerfield=...} tokens in emails to access contact fields of the referring contact. That enables you to build a campaign based on a segment that includes referred contacts (by filtering with the specified tag) and send a welcome email to those new contacts including for example the first name of the referring contact or a personal message.
+
+## Feedback
 Ideas and suggestions are welcome, feel free to create an issue or PR on Github.
 
+## License
 Licensed under GNU General Public License v3.0.
 
 ## Author

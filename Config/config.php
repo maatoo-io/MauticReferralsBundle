@@ -28,6 +28,15 @@ return [
                     'mautic.validator.email',
                 ],
             ],
+            'mautic.referrals.event_listener.form_subscriber' => [
+                'class'     => \MauticPlugin\MauticReferralsBundle\EventListener\LeadSubscriber::class,
+                'arguments' => [
+                    'mautic.lead.model.lead',
+                    'mautic.referrals.model.referral',
+                    'translator',
+                    'router',
+                ],
+            ],
             'mautic.referrals.event_listener.email_subscriber' => [
                 'class'     => \MauticPlugin\MauticReferralsBundle\EventListener\EmailSubscriber::class,
                 'arguments' => [
