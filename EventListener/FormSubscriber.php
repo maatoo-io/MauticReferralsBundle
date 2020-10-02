@@ -19,6 +19,8 @@ use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use Mautic\LeadBundle\Model\LeadModel;
+use Mautic\EmailBundle\Helper\EmailValidator;
+use Mautic\EmailBundle\Exception\InvalidEmailException;
 use MauticPlugin\MauticReferralsBundle\Entity\Referral;
 use MauticPlugin\MauticReferralsBundle\Form\Type\ReferralsType;
 use MauticPlugin\MauticReferralsBundle\Model\ReferralModel;
@@ -66,18 +68,25 @@ class FormSubscriber implements EventSubscriberInterface
      */
     private $translator;
 
+    /**
+     * @var EmailValidator
+     */
+    private $validator;
+
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         LeadModel $leadModel,
         FieldModel $fieldModel,
         ReferralModel $referralModel,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        EmailValidator $validator
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->leadModel     = $leadModel;
         $this->fieldModel    = $fieldModel;
         $this->referralModel = $referralModel;
         $this->translator    = $translator;
+        $this->validator     = $validator;
     }
 
     /**
@@ -97,10 +106,6 @@ class FormSubscriber implements EventSubscriberInterface
      */
     public function onFormBuild(FormBuilderEvent $event)
     {
-        /*if (!$this->referralsIsConfigured) {
-            return;
-        }*/
-
         $event->addFormField('plugin.referrals', [
             'label'          => 'mautic.plugin.referrals',
             'formType'       => ReferralsType::class,
@@ -110,8 +115,8 @@ class FormSubscriber implements EventSubscriberInterface
                 'addIsRequired'    => true,
                 'addDefaultValue'  => false,
                 'addSaveResult'    => true,
+                'addInputAttributes' => true,
             ],
-            'site_key' => $this->siteKey,
         ]);
 
         $event->addValidator('plugin.referrals.validator', [
@@ -125,10 +130,8 @@ class FormSubscriber implements EventSubscriberInterface
      */
     public function onFormSubmit(SubmissionEvent $event)
     {
-        //$form    = $event->getSubmission()->getForm();
         $fields   = $event->getFields();
         $post     = $event->getPost();
-        $results  = $event->getResults();
         $referrer = $event->getLead();
 
         foreach ($fields as $field) {
@@ -153,13 +156,7 @@ class FormSubscriber implements EventSubscriberInterface
                             }
 
                             $valid_referrals[] = $referral_email;
-                            //$lead              = (new Lead())
-                            //    ->addUpdatedField('email', $referral_email);
-                            //->addUpdatedField('firstname', $info['firstname'])
-                            //->addUpdatedField('lastname', $info['lastname']);
 
-                            //$this->leadModel->saveEntity($lead);
-                            
                             if (!empty($props['add_tags']) && is_array($props['add_tags'])) {
                                 $this->leadModel->setTags($lead, $props['add_tags']);
                             }
@@ -171,12 +168,8 @@ class FormSubscriber implements EventSubscriberInterface
                         }
                     }
                 }
-                $results[$field['alias']] = implode(', ', $valid_referrals);
             }
         }
-
-        // TODO: Clean result (no empty values) -> doesn't work at the moment
-        $event->setResults($results);
 
         return true;
     }
@@ -186,17 +179,39 @@ class FormSubscriber implements EventSubscriberInterface
         $field = $event->getField();
         $value = $event->getValue();
 
-        // TODO: Validate referral email addresses
-        if (true === true) {
-            return true;
+        $validated = true;
+        $reason = 'mautic.form.field.generic.required';
+        if ('plugin.referrals' === $field->getType()) {
+            if (is_array($value)) {
+                $value = array_filter($value);
+                if (count($value) > 0 ) {
+                    foreach($value as $referral_email) {
+                        if ('' !== $referral_email) {
+                            try {
+                                $this->validator->validate($referral_email);
+                            } catch (InvalidEmailException $exception) {
+                                $validated = false;
+                                $reason = 'mautic.form.submission.email.invalid';
+                            }
+                        } 
+                    }
+                } else {
+                    $validated = false;
+                }
+            } else {
+                $validated = false;
+            }
         }
 
-        $event->failedValidation(null === $this->translator ? 'Failed adding referrals.' : $this->translator->trans('mautic.integration.referrals.failure_message'));
+        if (!$validated) {
+            $event->failedValidation($this->translator->trans($reason, [], 'validators'));
+            $this->eventDispatcher->addListener(LeadEvents::LEAD_POST_SAVE, function (LeadEvent $event) {
+                if ($event->isNew()) {
+                    $this->leadModel->deleteEntity($event->getLead());
+                }
+            }, -255);
+        }
 
-        $this->eventDispatcher->addListener(LeadEvents::LEAD_POST_SAVE, function (LeadEvent $event) {
-            if ($event->isNew()) {
-                $this->leadModel->deleteEntity($event->getLead());
-            }
-        }, -255);
     }
+
 }

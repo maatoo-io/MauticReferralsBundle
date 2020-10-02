@@ -25,6 +25,7 @@ return [
                     'mautic.form.model.field',
                     'mautic.referrals.model.referral',
                     'translator',
+                    'mautic.validator.email',
                 ],
             ],
             'mautic.referrals.event_listener.email_subscriber' => [

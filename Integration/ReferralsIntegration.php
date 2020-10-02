@@ -35,8 +35,7 @@ class ReferralsIntegration extends AbstractIntegration
     public function getRequiredKeyFields()
     {
         return [
-            //'site_key'   => 'mautic.integration.referrals.site_key',
-            //'secret_key' => 'mautic.integration.referrals.secret_key',
+            
         ];
     }
 }

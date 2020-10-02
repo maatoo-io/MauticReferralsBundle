@@ -27,6 +27,11 @@ $label = (!$field['showLabel'])
 <label $labelAttr>{$view->escape($field['label'])}</label>
 HTML;
 
+$help = (empty($field['helpMessage'])) ? '' : <<<HTML
+
+                <span class="mauticform-helpmessage">{$field['helpMessage']}</span>
+HTML;
+
 $inputs = '';
 
 for ($i=0; $i < $settings['referrals']; ++$i) {
@@ -38,9 +43,9 @@ INPUTS;
 $html = <<<HTML
 
             <div $containerAttr>
-                {$label}
+                {$label}{$help}
                 {$inputs}
-                <span class="mauticform-errormsg" style="display: none;"></span>
+                <span class="mauticform-errormsg" style="display: none;">{$validationMessage}</span>
             </div>
 HTML;
 ?>
