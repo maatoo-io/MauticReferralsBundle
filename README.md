@@ -22,10 +22,10 @@ Download the .zip file, extract it into the `plugins/` directory and rename the 
 Clear the cache via console command `php app/console cache:clear --env=prod` (might take a while) *OR* manually delete the `app/cache/prod` directory.
 
 ## Configuration
-Navigate to the Plugins page and click "Install/Upgrade Plugins". You should now see a "Referrals" plugin. Open it to configure site key and site secret.
+Navigate to the Plugins page and click "Install/Upgrade Plugins". You should now see a "Referrals" plugin. Open it and set it to published.
 
-![plugin config](/doc/config.png?raw=true "plugin config")
-
-## Usage in Mautic Form
-Add "Referrals" field to the Form and save changes.
+## Usage
+Add "Referrals" field to the Form and specify number of email inputs to display and what tags to set on referrals:
 ![mautic form](/doc/form_preview.png?raw=true "Mautic Form with Referrals")
+
+Use `{referrerfield=...}` tokens in emails to include contact fields from the referring contact.
