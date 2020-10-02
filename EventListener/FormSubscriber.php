@@ -19,11 +19,8 @@ use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use Mautic\LeadBundle\Model\LeadModel;
-use Mautic\PluginBundle\Helper\IntegrationHelper;
-use Mautic\PluginBundle\Integration\AbstractIntegration;
 use MauticPlugin\MauticReferralsBundle\Entity\Referral;
 use MauticPlugin\MauticReferralsBundle\Form\Type\ReferralsType;
-use MauticPlugin\MauticReferralsBundle\Integration\ReferralsIntegration;
 use MauticPlugin\MauticReferralsBundle\Model\ReferralModel;
 use MauticPlugin\MauticReferralsBundle\ReferralsEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -71,20 +68,12 @@ class FormSubscriber implements EventSubscriberInterface
 
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        IntegrationHelper $integrationHelper,
         LeadModel $leadModel,
         FieldModel $fieldModel,
         ReferralModel $referralModel,
         TranslatorInterface $translator
     ) {
         $this->eventDispatcher = $eventDispatcher;
-        $integrationObject     = $integrationHelper->getIntegrationObject(ReferralsIntegration::INTEGRATION_NAME);
-
-        if ($integrationObject instanceof AbstractIntegration) {
-            $keys            = $integrationObject->getKeys();
-            //$this->siteKey   = isset($keys['site_key']) ? $keys['site_key'] : null;
-            //$this->secretKey = isset($keys['secret_key']) ? $keys['secret_key'] : null;
-        }
         $this->leadModel     = $leadModel;
         $this->fieldModel    = $fieldModel;
         $this->referralModel = $referralModel;
@@ -151,13 +140,26 @@ class FormSubscriber implements EventSubscriberInterface
                 if (!empty($post[$field['alias']]) && is_array($post[$field['alias']])) {
                     foreach ($post[$field['alias']] as $referral_email) {
                         if ('' !== $referral_email) {
+                            $leads = $this->leadModel->getRepository()->getLeadsByFieldValue('email', [$referral_email], null, true);
+
+                            if (!isset($leads[strtolower($referral_email)])) {
+                                $lead = (new Lead())
+                                    ->addUpdatedField('email', $referral_email);
+                                $this->leadModel->saveEntity($lead);
+            
+                                $leads[strtolower($referral_email)] = $lead;
+                            } else {
+                                $lead = $leads[strtolower($referral_email)];
+                            }
+
                             $valid_referrals[] = $referral_email;
-                            $lead              = (new Lead())
-                                ->addUpdatedField('email', $referral_email);
+                            //$lead              = (new Lead())
+                            //    ->addUpdatedField('email', $referral_email);
                             //->addUpdatedField('firstname', $info['firstname'])
                             //->addUpdatedField('lastname', $info['lastname']);
 
-                            $this->leadModel->saveEntity($lead);
+                            //$this->leadModel->saveEntity($lead);
+                            
                             if (!empty($props['add_tags']) && is_array($props['add_tags'])) {
                                 $this->leadModel->setTags($lead, $props['add_tags']);
                             }

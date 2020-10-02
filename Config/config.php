@@ -21,7 +21,6 @@ return [
                 'class'     => \MauticPlugin\MauticReferralsBundle\EventListener\FormSubscriber::class,
                 'arguments' => [
                     'event_dispatcher',
-                    'mautic.helper.integration',
                     'mautic.lead.model.lead',
                     'mautic.form.model.field',
                     'mautic.referrals.model.referral',
