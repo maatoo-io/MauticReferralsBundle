@@ -28,7 +28,7 @@ return [
                     'mautic.validator.email',
                 ],
             ],
-            'mautic.referrals.event_listener.form_subscriber' => [
+            'mautic.referrals.event_listener.lead_subscriber' => [
                 'class'     => \MauticPlugin\MauticReferralsBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
                     'mautic.lead.model.lead',
