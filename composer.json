@@ -1,0 +1,15 @@
+{
+    "name": "maatoo/mautic-referrals-bundle",
+    "description": "This plugin enables referrals in mautic.",
+    "type": "mautic-plugin",
+    "require": {
+        "mautic/composer-plugin": "^1.0"
+    },
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "maatoo.io",
+            "email": "support@maatoo.io"
+        }
+    ]
+}

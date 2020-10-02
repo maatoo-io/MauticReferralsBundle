@@ -1,0 +1,54 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "46e7bcb3c2dcf1f48cea9b8c2a279b6f",
+    "packages": [
+        {
+            "name": "mautic/composer-plugin",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mautic/composer-plugin.git",
+                "reference": "aa0f01e683c7e418082ea904a40345a650c219f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mautic/composer-plugin/zipball/aa0f01e683c7e418082ea904a40345a650c219f9",
+                "reference": "aa0f01e683c7e418082ea904a40345a650c219f9",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.5"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Mautic\\Composer\\InstallerPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mautic\\Composer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "time": "2019-08-01T19:20:57+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
+}
