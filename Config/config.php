@@ -9,7 +9,7 @@
 return [
     'name'        => 'Referrals',
     'description' => 'Enables Referrals integration.',
-    'version'     => '1.0',
+    'version'     => '1.0.1',
     'author'      => 'maatoo.io',
 
     'routes' => [
