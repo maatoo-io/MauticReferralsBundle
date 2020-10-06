@@ -81,6 +81,11 @@ class EmailSubscriber implements EventSubscriberInterface
 
         if ($lead['id']) {
             $referrer = $this->referralModel->getRepository()->getLeadReferrer($lead['id']);
+            if(count($referrer)) {
+                $referrer = $referrer[0];
+            } else {
+                return;
+            }
         } else {
             // Preview
             $referrer = $lead;
