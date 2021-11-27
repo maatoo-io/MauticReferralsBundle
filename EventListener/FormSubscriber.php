@@ -196,7 +196,9 @@ class FormSubscriber implements EventSubscriberInterface
                         } 
                     }
                 } else {
-                    $validated = false;
+                    if ($field->getIsRequired()) {
+                        $validated = false;
+                    }
                 }
             } else {
                 $validated = false;
